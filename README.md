@@ -1,2 +1,61 @@
-# petcat-esp32-m5stickc
-A cute virtual pet cat for esp32/M5StickC Plus with feeding, petting, play, and microphone-triggered interactions.
+# 奶油猫咪小程序
+
+这是给 M5StickC Plus 做的电子宠物小程序。小猫名字叫 **奶油**，是一只黑白奶牛猫。平时它待在小猫窝里探头看你，互动时才会从窝里出来。
+
+## 功能
+
+- 按一下正面 A 键：投喂
+- 长按正面 A 键约 0.7 秒：摸摸奶油，手会出现抚摸它，它会蹲起来眯眼享受
+- 按一下侧边 B 键：逗猫
+- 对着麦克风叫「奶油」：奶油会听到，先从窝里出来，然后开心转圈
+- 待机画面：淡米色背景，小猫窝里只露出奶油的脑袋
+- 互动画面：奶油会先在猫窝门口露头伸爪，再滑出来显示一只更小、更圆的侧躺奶牛猫
+
+当前语音触发是轻量版：程序会先校准环境音，再检测明显的人声，把它当作在叫「奶油」。这适合先把互动跑起来；如果后面要真的识别「奶油」两个字，可以再接 ESP-SR 或联网语音识别。
+
+## 用 Arduino IDE 烧录
+
+1. 安装 Arduino IDE。
+2. 在 Boards Manager 安装 `esp32` 开发板支持。
+3. 在 Library Manager 安装 `M5StickCPlus`。
+4. 打开 `CreamCat/CreamCat.ino`。
+5. 开发板选择 `M5Stick-C` 或对应的 M5StickC Plus ESP32 选项。
+6. 插上 M5StickC Plus，选择串口，点击上传。
+
+## 用 PlatformIO 烧录
+
+项目已经带了 `platformio.ini`。安装 PlatformIO 后，在本目录执行：
+
+```bash
+pio run -t upload
+```
+
+串口监视：
+
+```bash
+pio device monitor
+```
+
+## 麦克风说明
+
+M5StickC Plus 的内置 PDM 麦克风使用：
+
+- CLK: GPIO0
+- DATA: GPIO34
+
+程序启动后会先用约 1.4 秒估计环境底噪。开机时尽量先别说话，等屏幕不再显示 `Mic calibrating...` 后，再让设备离嘴近一点，清楚喊「奶油」。
+
+底部右侧会显示麦克风状态：
+
+- `CAL`：正在校准环境音
+- `V012` / `V120`：麦克风读到的声音强度，数字越大代表声音越明显
+- `E1` / `E2`：麦克风读取出错
+
+如果你说话时 `V` 数字明显变大，说明麦克风能听到，只是触发阈值还要继续调。如果 `V` 数字完全不动，或者一直显示 `E`，说明麦克风采集没有成功，需要先检查板子型号和端口/库版本。
+
+## 后续可升级
+
+- 增加睡觉、生病、撒娇等状态
+- 增加红外遥控动作或蜂鸣器音效
+- 把叫名检测升级成真正关键词识别
+- 保存状态到 flash，断电后继续养
